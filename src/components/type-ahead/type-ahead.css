@@ -1,0 +1,35 @@
+.type-ahead-wrapper {
+    @apply flex flex-col p-2 mt-1 w-full;
+}
+
+.input-wrapper {
+    @apply w-full relative;
+}
+
+.input-wrapper button {
+    @apply absolute -right-3 top-1/2 bottom-1/2 h-1/2 -translate-y-1/2 bg-transparent border-0 text-2xl cursor-pointer hover:bg-neutral-100;
+}
+
+input {
+    @apply w-full rounded border bg-white p-3 text-base;
+}
+
+.dropdown {
+    @apply w-full;
+}
+
+.drawer {
+    @apply w-full flex flex-col rounded bg-white ring-1 shadow-lg m-0 divide-y-2 pl-0 pr-6 mt-2;
+}
+
+li {
+    @apply relative w-full list-none hover:bg-neutral-100 cursor-default inline-block select-none p-3;
+}
+
+li.selected {
+    @apply bg-neutral-100;
+}
+
+li span {
+    @apply inline-block truncate;
+}
