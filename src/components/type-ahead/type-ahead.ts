@@ -3,6 +3,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {TailwindElement} from '../../shared/tailwind.element.ts';
 import style from './type-ahead.css?inline';
 import 'iconify-icon';
+import '../utilities/h-transition.ts'
 
 type Event = InputEvent & { target: HTMLInputElement }
 
@@ -14,48 +15,43 @@ export class TypeAhead extends TailwindElement(style) {
   value?: string;
   @property({type: Array})
   options: { label: string, value: string }[];
-
-  @state()
+  @property({type: Boolean})
   private _open: boolean;
+
   @state()
   private _listed: typeof this.options = [];
   @state()
   private _option?: string;
-  @state()
-  private _animating: 'in' | 'out' = 'out';
 
-  openDropdown() {
-    this._open = true;
-    setTimeout(() => {
-      this._animating = 'in';
-    }, 1);
-  }
-
-  closeDropdown() {
-    this._animating = 'out';
-    setTimeout(() => {
-      this._open = false;
-    }, 500);
-  }
 
   setState(state: boolean) {
-    state ? this.openDropdown() : this.closeDropdown();
+    this._open = state;
   }
-  
+
   constructor() {
     super();
     this._open = false;
     this.options = [];
+  }
+
+  private _handleClick(e: MouseEvent) {
+    const target = e.target as Element;
+    if (target?.tagName === 'TYPE-AHEAD') {
+      return;
+    }
+    this._open = false;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
 
     //On click outside
-    document.addEventListener('click', (e: MouseEvent) => {
-      const target = e.target as Element;
-      if (target?.tagName === 'TYPE-AHEAD') {
-        return;
-      }
+    addEventListener('click', this._handleClick);
+  }
 
-      this._open = false;
-    });
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    removeEventListener('click', this._handleClick);
   }
 
   updated(changedProperties: Map<string, any>) {
@@ -97,20 +93,18 @@ export class TypeAhead extends TailwindElement(style) {
                 </button>
             </div>
             <div class="dropdown">
-                ${
-                    this._open ? html`
-                        <ul class="drawer ${this._animating}">
-                            ${this._listed.map(o => html`
-                                <li class="${o.value === this.value ? 'selected' : ''}"
-                                    aria-selected="${o.value === this.value}"
-                                    data-value="${o.value}"
-                                    @click="${this.updateValue}">
-                                    <span>${o.label}</span>
-                                </li>`
-                            )}
-                        </ul>` : ''
-
-                }
+                <h-transition ?show="${this._open}">
+                    <ul class="drawer">
+                        ${this._listed.map(o => html`
+                            <li class="${o.value === this.value ? 'selected' : ''}"
+                                aria-selected="${o.value === this.value}"
+                                data-value="${o.value}"
+                                @click="${this.updateValue}">
+                                <span>${o.label}</span>
+                            </li>`
+                        )}
+                    </ul>
+                </h-transition>
             </div>
         </div>
     `;
