@@ -16,8 +16,9 @@ export class HTransition extends TailwindElement('') {
   enterFrom: string = 'opacity-0';
   @property({type: String})
   enterTo: string = 'opacity-100';
+  // Not implemented
   @property({type: Number})
-  duration: number = 50;
+  duration: number = 150;
 
   get _slottedChildren() {
     const slot = this.shadowRoot!.querySelector('slot')!;
@@ -68,7 +69,7 @@ export class HTransition extends TailwindElement('') {
     children[0].classList.remove(this.enterTo);
     setTimeout(() => {
       this._isShowing = false;
-    }, this.duration * 1.5);
+    }, 300);
   }
 
   render() {
