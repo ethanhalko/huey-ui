@@ -7,7 +7,7 @@
 }
 
 .input-wrapper button {
-    @apply absolute -right-3 top-1/2 bottom-1/2 h-1/2 -translate-y-1/2 bg-transparent border-0 text-2xl cursor-pointer hover:bg-neutral-100;
+    @apply absolute right-3 top-1/2 bottom-1/2 h-1/2 -translate-y-1/2 bg-transparent border-0 text-2xl cursor-pointer hover:bg-neutral-100;
 }
 
 input {

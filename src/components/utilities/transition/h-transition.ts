@@ -1,24 +1,29 @@
 import {customElement, property, state} from 'lit/decorators.js';
-import {TailwindElement} from '../../shared/tailwind.element.ts';
 import {html} from 'lit';
-import {when} from 'lit/directives/when.js';
+import {TailwindElement} from '../../../shared/tailwind.element.ts';
 
 @customElement('h-transition')
 export class HTransition extends TailwindElement('') {
   @state()
   private _ready: boolean = false;
   @state()
-  private _activeTransition: string = '';
-  @state()
   private _isShowing: boolean = false;
   @property({type: Boolean})
   show: boolean = false;
   @property({type: String})
-  transitionTo: string = '';
+  transition: string = '';
   @property({type: String})
-  transitionFrom: string = '';
+  enterFrom: string = 'opacity-0';
+  @property({type: String})
+  enterTo: string = 'opacity-100';
   @property({type: Number})
-  duration: number = 150;
+  duration: number = 50;
+
+
+  get _slottedChildren() {
+    const slot = this.shadowRoot!.querySelector('slot')!;
+    return slot.assignedElements({flatten: true});
+  }
 
   // Unsafe - add tag validation before implementing
   // @property()
@@ -43,12 +48,24 @@ export class HTransition extends TailwindElement('') {
   transitionIn() {
     this._isShowing = true;
     setTimeout(() => {
-      this._activeTransition = this.transitionTo;
+      const children = this._slottedChildren;
+      if (children.length > 1) {
+        return;
+      }
+
+      children[0].classList.remove(this.enterFrom);
+      children[0].classList.add(this.enterTo);
     }, 1);
   }
 
   transitionOut() {
-    this._activeTransition = this.transitionFrom;
+    const children = this._slottedChildren;
+    if (children.length > 1) {
+      return;
+    }
+
+    children[0].classList.add(this.enterFrom);
+    children[0].classList.remove(this.enterTo);
     setTimeout(() => {
       this._isShowing = false;
     }, this.duration * 1.5);
@@ -56,12 +73,9 @@ export class HTransition extends TailwindElement('') {
 
   render() {
     return html`
-        <div class="${this._activeTransition}">
-            ${
-                when(this._isShowing, () => html`
-                    <slot></slot>`)
-            }
-        </div>
-    `
+        ${
+            this._isShowing ? html`
+                <slot></slot>` : ''
+        }`
   }
 }

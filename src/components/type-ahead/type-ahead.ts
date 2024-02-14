@@ -3,7 +3,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {TailwindElement} from '../../shared/tailwind.element.ts';
 import style from './type-ahead.css?inline';
 import 'iconify-icon';
-import '../utilities/h-transition.ts'
+import '../utilities/transition/h-transition.ts'
 
 type Event = InputEvent & { target: HTMLInputElement }
 
@@ -44,7 +44,6 @@ export class TypeAhead extends TailwindElement(style) {
 
   connectedCallback() {
     super.connectedCallback();
-
     //On click outside
     addEventListener('click', this._handleClick);
   }
@@ -93,8 +92,8 @@ export class TypeAhead extends TailwindElement(style) {
                 </button>
             </div>
             <div class="dropdown">
-                <h-transition ?show="${this._open}">
-                    <ul class="drawer">
+                <h-transition ?show="${this._open}" enterFrom="opacity-0" enterTo="opacity-100">
+                    <ul class="drawer transition-opacity">
                         ${this._listed.map(o => html`
                             <li class="${o.value === this.value ? 'selected' : ''}"
                                 aria-selected="${o.value === this.value}"
