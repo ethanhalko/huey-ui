@@ -19,7 +19,6 @@ export class HTransition extends TailwindElement('') {
   @property({type: Number})
   duration: number = 50;
 
-
   get _slottedChildren() {
     const slot = this.shadowRoot!.querySelector('slot')!;
     return slot.assignedElements({flatten: true});
@@ -40,13 +39,14 @@ export class HTransition extends TailwindElement('') {
       return;
     }
 
-    if (changedProperties.has('show')) {
+    if (changedProperties.get('show') !== undefined) {
       this._isShowing ? this.transitionOut() : this.transitionIn();
     }
   }
 
   transitionIn() {
     this._isShowing = true;
+
     setTimeout(() => {
       const children = this._slottedChildren;
       if (children.length > 1) {

@@ -34,7 +34,7 @@ export class TypeAhead extends TailwindElement(style) {
     this.options = [];
   }
 
-  private _handleClick(e: MouseEvent) {
+  private _handleClick = (e: MouseEvent) => {
     const target = e.target as Element;
     if (target?.tagName === 'TYPE-AHEAD') {
       return;
@@ -45,16 +45,16 @@ export class TypeAhead extends TailwindElement(style) {
   connectedCallback() {
     super.connectedCallback();
     //On click outside
-    addEventListener('click', this._handleClick);
+    document.addEventListener('click', this._handleClick);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    removeEventListener('click', this._handleClick);
+    document.removeEventListener('click', this._handleClick);
   }
 
   updated(changedProperties: Map<string, any>) {
-    if (changedProperties.has('options')) {
+    if (changedProperties.has('options') && this.options.length > 0) {
       this._listed = this.options;
     }
   }
@@ -69,6 +69,7 @@ export class TypeAhead extends TailwindElement(style) {
 
   toggleDropdown(e: Event) {
     e.preventDefault();
+
     this.setState(!this._open);
   }
 
