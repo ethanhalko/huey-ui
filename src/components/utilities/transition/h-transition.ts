@@ -1,6 +1,9 @@
 import {customElement, property, state} from 'lit/decorators.js';
-import {html} from 'lit';
+import {html, PropertyValues} from 'lit';
 import {TailwindElement} from '../../../shared/tailwind.element.ts';
+import {when} from 'lit/directives/when.js';
+import {swapClasses} from '../../../helpers/dom.ts';
+import {getModifierFromClassList} from '../../../helpers/parsing.ts';
 
 @customElement('h-transition')
 export class HTransition extends TailwindElement('') {
@@ -11,36 +14,29 @@ export class HTransition extends TailwindElement('') {
   @property({type: Boolean})
   show: boolean = false;
   @property({type: String})
-  transition: string = '';
+  transition: string = 'transition-opacity';
   @property({type: String})
   enterFrom: string = 'opacity-0';
   @property({type: String})
   enterTo: string = 'opacity-100';
-  // Not implemented
-  @property({type: Number})
-  duration: number = 150;
 
   get _slottedChildren() {
     const slot = this.shadowRoot!.querySelector('slot')!;
-    return slot.assignedElements({flatten: true});
+    return slot?.assignedElements({flatten: true}) || [];
   }
 
-  // Unsafe - add tag validation before implementing
-  // @property()
-  // element: String = 'div';
-  // tagName = literal`${this.element}`
+  protected firstUpdated(_changedProperties: PropertyValues) {
+    super.firstUpdated(_changedProperties);
 
-  connectedCallback() {
-    super.connectedCallback();
+    // Add property classes to the slot
+    const slot = this._slottedChildren;
+    slot[0].classList.add(this.transition, ...this.enterFrom.split(' '));
+
     this._ready = true;
   }
 
   updated(changedProperties: Map<string, any>) {
-    if (!this._ready) {
-      return;
-    }
-
-    if (changedProperties.get('show') !== undefined) {
+    if (this._ready && changedProperties.get('show') !== undefined) {
       this._isShowing ? this.transitionOut() : this.transitionIn();
     }
   }
@@ -54,8 +50,7 @@ export class HTransition extends TailwindElement('') {
         return;
       }
 
-      children[0].classList.remove(this.enterFrom);
-      children[0].classList.add(this.enterTo);
+      swapClasses(children, this.enterFrom, this.enterTo);
     }, 1);
   }
 
@@ -65,18 +60,21 @@ export class HTransition extends TailwindElement('') {
       return;
     }
 
-    children[0].classList.add(this.enterFrom);
-    children[0].classList.remove(this.enterTo);
+    const duration = getModifierFromClassList(this.enterFrom, 'duration') || 200;
+    swapClasses(children, this.enterTo, this.enterFrom);
     setTimeout(() => {
       this._isShowing = false;
-    }, 300);
+    }, duration);
   }
 
   render() {
     return html`
-        ${
-            this._isShowing ? html`
-                <slot></slot>` : ''
-        }`
+        <span class="${when(!this._isShowing, () => 'hidden')}"><slot></slot></span>`
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'h-transition': HTransition
   }
 }

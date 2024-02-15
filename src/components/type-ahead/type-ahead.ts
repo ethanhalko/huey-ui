@@ -1,4 +1,4 @@
-import {html} from 'lit';
+import {html, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {TailwindElement} from '../../shared/tailwind.element.ts';
 import style from './type-ahead.css?inline';
@@ -25,7 +25,9 @@ export class TypeAhead extends TailwindElement(style) {
 
 
   setState(state: boolean) {
-    this._open = state;
+    setTimeout(() => {
+      this._open = state;
+    }, 150);
   }
 
   constructor() {
@@ -61,8 +63,12 @@ export class TypeAhead extends TailwindElement(style) {
 
   updateValue(e: Event) {
     e.preventDefault();
+    const target = e.target.closest('li');
+    if (!target) {
+      return;
+    }
 
-    this.value = e.target.dataset.value;
+    this.value = target.dataset.value;
     this._option = this.options.find((o) => o.value === this.value)?.label || '';
     this.setState(false);
   }
@@ -94,13 +100,16 @@ export class TypeAhead extends TailwindElement(style) {
             </div>
             <div class="dropdown">
                 <h-transition ?show="${this._open}" enterFrom="opacity-0" enterTo="opacity-100">
-                    <ul class="drawer transition-opacity">
+                    <ul class="drawer">
                         ${this._listed.map(o => html`
                             <li class="${o.value === this.value ? 'selected' : ''}"
                                 aria-selected="${o.value === this.value}"
                                 data-value="${o.value}"
                                 @click="${this.updateValue}">
-                                <span>${o.label}</span>
+                                <div class="flex">
+                                    ${o.label}
+                                    ${o.value === this.value ? html`<iconify-icon icon="mdi:check" class="my-auto mx-2"/>` : nothing}
+                                </div>
                             </li>`
                         )}
                     </ul>

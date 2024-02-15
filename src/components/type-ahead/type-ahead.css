@@ -7,7 +7,7 @@
 }
 
 .input-wrapper button {
-    @apply absolute right-3 top-1/2 bottom-1/2 h-1/2 -translate-y-1/2 bg-transparent border-0 text-2xl cursor-pointer hover:bg-neutral-100;
+    @apply absolute right-3 top-1/2 bottom-1/2 h-1/2 -translate-y-1/2 bg-transparent border-0 text-2xl cursor-pointer text-neutral-500;
 }
 
 input {
@@ -19,15 +19,7 @@ input {
 }
 
 .drawer {
-    @apply w-full flex flex-col rounded bg-white ring-1 shadow-lg m-0 divide-y-2 pl-0 pr-6 mt-2;
-}
-
-.drawer.in {
-    @apply opacity-100 transition-opacity ease-in duration-100;
-}
-
-.drawer.out {
-    @apply opacity-0 transition-opacity ease-out duration-150;
+    @apply w-full flex flex-col rounded bg-white ring-1 shadow-lg m-0 divide-y-2 pl-0 mt-2;
 }
 
 li {

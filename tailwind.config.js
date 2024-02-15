@@ -8,10 +8,4 @@ export default {
     extend: {},
   },
   plugins: [],
-  safelist: [
-    'transition',
-    'transition-opacity',
-    'opacity-100',
-    'opacity-0'
-  ],
 }
